@@ -7,6 +7,6 @@ public class ScheduleRequestDto {
     private String writer;
     private String title;
     private String password;
-    private String create_date;
-    private String update_date;
+//    private String create_date;
+//    private String update_date;
 }
