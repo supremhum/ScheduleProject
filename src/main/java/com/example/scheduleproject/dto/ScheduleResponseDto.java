@@ -21,4 +21,11 @@ public class ScheduleResponseDto {
         this.createDate = schedule.getCreateDate();
         this.updateDate = schedule.getUpdateDate();
     }
+    public ScheduleResponseDto(Schedule schedule) {
+        this.id = schedule.getId();
+        this.author = schedule.getAuthor();
+        this.title = schedule.getTitle();
+        this.createDate = schedule.getCreateDate();
+        this.updateDate = schedule.getUpdateDate();
+    }
 }

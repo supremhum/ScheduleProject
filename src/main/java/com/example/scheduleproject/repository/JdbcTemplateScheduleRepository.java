@@ -15,6 +15,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Repository
 public class JdbcTemplateScheduleRepository implements ScheduleRepository {
@@ -58,10 +59,12 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
     }
 
     @Override
-    public ScheduleResponseDto findScheduleById(Long id) {
-        Schedule schedule = findById(id);
-        ScheduleResponseDto dto = new ScheduleResponseDto(schedule.getId(),schedule.getAuthor(),schedule.getTitle(),schedule.getCreateDate(),schedule.getUpdateDate());
-        return dto;
+    public Optional<Schedule> findScheduleById(Long id) {
+//        Schedule schedule = findById(id);
+//        ScheduleResponseDto dto = new ScheduleResponseDto(schedule.getId(),schedule.getAuthor(),schedule.getTitle(),schedule.getCreateDate(),schedule.getUpdateDate());
+        List<Schedule> result = jdbcTemplate.query("SELECT * FROM schedule WHERE id = ?", scheduleRowMapperV2(), id);
+
+        return result.stream().findAny();
     }
 
     private RowMapper<ScheduleResponseDto> scheduleRowMapper() {
@@ -96,5 +99,20 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
                         rs.getString("updateDate")
                 )
         );
+    }
+
+    private RowMapper<Schedule> scheduleRowMapperV2(){
+        return new RowMapper<Schedule>() {
+            @Override
+            public Schedule mapRow(ResultSet rs, int rowNum) throws SQLException {
+                return new Schedule(
+                        rs.getLong("id"),
+                        rs.getString("author"),
+                        rs.getString("title"),
+                        rs.getString("createDate"),
+                        rs.getString("updateDate")
+                );
+            }
+        };
     }
 }

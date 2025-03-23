@@ -4,9 +4,12 @@ import com.example.scheduleproject.dto.ScheduleRequestDto;
 import com.example.scheduleproject.dto.ScheduleResponseDto;
 import com.example.scheduleproject.entity.Schedule;
 import com.example.scheduleproject.repository.ScheduleRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ScheduleServiceImpl implements ScheduleService{
@@ -36,7 +39,12 @@ public class ScheduleServiceImpl implements ScheduleService{
 
     @Override
     public ScheduleResponseDto findScheduleById(Long id) {
-        return scheduleRepository.findScheduleById(id);
+        Optional<Schedule> schedule = scheduleRepository.findScheduleById(id);
+        if (schedule.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"못찾음");
+        }
+        return new ScheduleResponseDto(schedule.get());
+
 
     }
 }

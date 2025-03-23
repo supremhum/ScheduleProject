@@ -22,4 +22,11 @@ public class Schedule {
     }
 
     // 때에 맞춰서 기능 생성
+    public Schedule(Long id,String author, String title, String createDate, String updateDate) {
+        this.id = id;
+        this.author = author;
+        this.title = title;
+        this.createDate = createDate;
+        this.updateDate = updateDate;
+    }
 }
