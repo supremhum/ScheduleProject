@@ -9,19 +9,21 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
-public class ScheduleServiceImpl implements ScheduleService{
+public class ScheduleServiceImpl implements ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
 
-    public ScheduleServiceImpl (ScheduleRepository scheduleRepository) {
-        this.scheduleRepository=scheduleRepository;
+    public ScheduleServiceImpl(ScheduleRepository scheduleRepository) {
+        this.scheduleRepository = scheduleRepository;
     }
 
 
+    @Transactional
     @Override
     public ScheduleResponseDto saveSchedule(ScheduleRequestDto dto) {
 
@@ -29,20 +31,24 @@ public class ScheduleServiceImpl implements ScheduleService{
 
         ScheduleResponseDto responseDto = scheduleRepository.saveSchedule(schedule);
         return responseDto;
-//        return scheduleRepository.saveSchedule(schedule);
 
     }
 
     @Override
     public List<ScheduleResponseDto> findAllSchedules() {
-        return scheduleRepository.findAllSchedules();
+        List<Schedule> allSchedules = scheduleRepository.findAllSchedules();
+        List<ScheduleResponseDto> allSchedule = new ArrayList<>();
+        for (Schedule schedule : allSchedules) {
+            allSchedule.add(new ScheduleResponseDto(schedule));
+        }
+        return allSchedule;
     }
 
     @Override
     public ScheduleResponseDto findScheduleById(Long id) {
         Optional<Schedule> schedule = scheduleRepository.findScheduleById(id);
         if (schedule.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"못찾음");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "못찾음");
         }
         return new ScheduleResponseDto(schedule.get());
 
@@ -52,33 +58,31 @@ public class ScheduleServiceImpl implements ScheduleService{
     @Transactional
     @Override
     public ScheduleResponseDto updateScheduleById(Long id, String author, String title) {
-        if (title==null||author==null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"제목과 작성자는 필수입니다");
+        if (title == null || author == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "제목과 작성자는 필수입니다");
         }
 
-        int updateRow = scheduleRepository.updateScheduleById(id,author,title);
+        int updateRow = scheduleRepository.updateScheduleById(id, author, title);
 
-        if(updateRow==0) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"해당 id값이 없습니다");
+        if (updateRow == 0) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 id값이 없습니다");
         }
 
         Optional<Schedule> optionalSchedule = scheduleRepository.findScheduleById(id);
-
-//        ScheduleResponseDto rdto = new ScheduleResponseDto(schedule);
 
         return new ScheduleResponseDto(optionalSchedule.get());
     }
 
     @Override
     @Transactional
-    public ScheduleResponseDto updateTitleById(Long id, String author,String title) {
-        if (author!=null||title==null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"제목만 보내야 합니다");
+    public ScheduleResponseDto updateTitleById(Long id, String author, String title) {
+        if (author != null || title == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "제목만 보내야 합니다");
         }
-        int updateRow = scheduleRepository.updateTitleById(id,title);
+        int updateRow = scheduleRepository.updateTitleById(id, title);
 
-        if (updateRow==0) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"id값을 찾을 수 없습니다");
+        if (updateRow == 0) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "id값을 찾을 수 없습니다");
         }
         Optional<Schedule> optionalSchedule = scheduleRepository.findScheduleById(id);
         ScheduleResponseDto dto = new ScheduleResponseDto(optionalSchedule.get());
@@ -89,8 +93,8 @@ public class ScheduleServiceImpl implements ScheduleService{
     @Override
     public void deleteScheduleById(Long id) {
         int updateRow = scheduleRepository.deleteScheduleById(id);
-        if (updateRow==0) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"찾을 수 없는 ID");
+        if (updateRow == 0) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "찾을 수 없는 ID");
         }
     }
 }
