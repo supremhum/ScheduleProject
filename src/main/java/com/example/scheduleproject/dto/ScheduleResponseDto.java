@@ -8,26 +8,17 @@ import lombok.Getter;
 @AllArgsConstructor
 public class ScheduleResponseDto {
     private Long id;
-    private String writer;
+    private String author;
     private String title;
-//    private String create_date;
-//    private String update_date;
+    private String createDate;
+    private String updateDate;
 
-//    public ScheduleResponseDto(Schedule schedule) {
-//
-//        this.id = schedule.getId();
-//        this.writer = schedule.getWriter();
-//        this.title = schedule.getTitle();
-//        this.create_date = schedule.getCreate_date();
-//        this.update_date = schedule.getUpdate_date();
-//
-//    }
 
     public ScheduleResponseDto(Long id, Schedule schedule) {
         this.id = id;
-        this.writer = schedule.getWriter();
+        this.author = schedule.getAuthor();
         this.title = schedule.getTitle();
-//        this.create_date = schedule.getCreate_date();
-//        this.update_date = schedule.getUpdate_date();
+        this.createDate = schedule.getCreateDate();
+        this.updateDate = schedule.getUpdateDate();
     }
 }

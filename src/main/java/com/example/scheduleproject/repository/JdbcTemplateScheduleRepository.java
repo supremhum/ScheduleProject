@@ -8,6 +8,8 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,19 +24,37 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
     @Override
     public ScheduleResponseDto saveSchedule(Schedule schedule) {
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate); // insert 란 명령어는 새로운 행 삽입이니깐.
-        jdbcInsert.withTableName("schedule").usingGeneratedKeyColumns("id"); // schedule 이란 테이블에서 키생성자사용 칼럼명id에서
+        jdbcInsert.withTableName("schedule").usingGeneratedKeyColumns("id"); // schedule 이란 테이블에서 키-생성자-사용 칼럼명-id에서
 
-        Map<String,Object> parameters = new HashMap<>();
-        parameters.put("writer",schedule.getWriter());
-        parameters.put("title",schedule.getTitle());
-        parameters.put("password",schedule.getPassword());
-//        parameters.put("create_date",schedule.getCreate_date());
-//        parameters.put("update_date",schedule.getUpdate_date());
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("author", schedule.getAuthor());
+        parameters.put("title", schedule.getTitle());
+        parameters.put("password", schedule.getPassword());
+//        parameters.put("targetDate", schedule.getCreateDate());
 
         Number key = jdbcInsert.executeAndReturnKey(new MapSqlParameterSource(parameters));
 
-        // return new ScheduleResponseDto(key.longValue(),schedule.getWriter(), schedule.getTitle(), schedule.getCreate_date(), schedule.getUpdate_date());
-        return new ScheduleResponseDto(key.longValue(),schedule);
+        // a라는 스케줄은 데이터베이스 정보로 만들기
+        // 그러면 날짜 시간 타입이 yyyy-mm-dd hh:mm:ss 로 이쁘게 나옴.
+        Schedule a = findById(key.longValue());
+        return new ScheduleResponseDto(key.longValue(), a.getAuthor(), a.getTitle(), a.getCreateDate(), a.getUpdateDate());
 
+
+    }
+
+    // DB에서 ID를 기반으로 데이터 조회하는 메서드 추가
+    public Schedule findById(Long id) {
+        String sql = "SELECT * FROM schedule WHERE id = ?";
+
+        return jdbcTemplate.queryForObject(sql, new Object[]{id}, (rs, rowNum) ->
+                new Schedule(
+                        rs.getLong("id"),
+                        rs.getString("author"),
+                        rs.getString("title"),
+                        rs.getString("password"),
+                        rs.getString("createDate"),
+                        rs.getString("updateDate")
+                )
+        );
     }
 }
