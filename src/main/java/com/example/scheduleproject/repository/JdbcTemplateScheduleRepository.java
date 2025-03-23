@@ -1,5 +1,6 @@
 package com.example.scheduleproject.repository;
 
+import com.example.scheduleproject.dto.ScheduleRequestDto;
 import com.example.scheduleproject.dto.ScheduleResponseDto;
 import com.example.scheduleproject.entity.Schedule;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -65,6 +66,13 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
         List<Schedule> result = jdbcTemplate.query("SELECT * FROM schedule WHERE id = ?", scheduleRowMapperV2(), id);
 
         return result.stream().findAny();
+    }
+
+    @Override
+    public int updateScheduleById(Long id,String author, String title) {
+        // 쿼리를 수행한 로우 수가 반환되는 것이다.
+        int updatedRow = jdbcTemplate.update("update schedule set author = ?, title = ?,updateDate = now() WHERE id = ?", author, title, id);
+        return updatedRow;
     }
 
     private RowMapper<ScheduleResponseDto> scheduleRowMapper() {

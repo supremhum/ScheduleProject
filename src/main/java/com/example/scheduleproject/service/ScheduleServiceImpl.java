@@ -6,6 +6,7 @@ import com.example.scheduleproject.entity.Schedule;
 import com.example.scheduleproject.repository.ScheduleRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -46,5 +47,25 @@ public class ScheduleServiceImpl implements ScheduleService{
         return new ScheduleResponseDto(schedule.get());
 
 
+    }
+
+    @Transactional
+    @Override
+    public ScheduleResponseDto updateScheduleById(Long id, String author, String title) {
+        if (title==null||author==null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"제목과 작성자는 필수입니다");
+        }
+
+        int updateRow = scheduleRepository.updateScheduleById(id,author,title);
+
+        if(updateRow==0) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"해당 id값이 없습니다");
+        }
+
+        Optional<Schedule> optionalSchedule = scheduleRepository.findScheduleById(id);
+
+//        ScheduleResponseDto rdto = new ScheduleResponseDto(schedule);
+
+        return new ScheduleResponseDto(optionalSchedule.get());
     }
 }
