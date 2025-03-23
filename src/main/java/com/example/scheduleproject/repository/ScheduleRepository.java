@@ -13,4 +13,5 @@ public interface ScheduleRepository {
     Optional<Schedule> findScheduleById(Long id);
     int updateScheduleById(Long id, String author, String title);
     int updateTitleById(Long id, String title);
+    int deleteScheduleById(Long id);
 }
