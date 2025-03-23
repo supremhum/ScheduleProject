@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpStatusCodeException;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/schedules")
 public class ScheduleController {
@@ -22,6 +24,12 @@ public class ScheduleController {
     @PostMapping
     public ResponseEntity<ScheduleResponseDto> createSchedule (@RequestBody ScheduleRequestDto dto) {
         return new ResponseEntity<>(scheduleService.saveSchedule(dto),HttpStatus.OK);
+
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ScheduleResponseDto>> findAllSchedules () {
+        return new ResponseEntity<>(scheduleService.findAllSchedules(),HttpStatus.OK);
 
     }
 

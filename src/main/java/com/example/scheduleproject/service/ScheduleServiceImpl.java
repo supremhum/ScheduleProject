@@ -6,6 +6,8 @@ import com.example.scheduleproject.entity.Schedule;
 import com.example.scheduleproject.repository.ScheduleRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ScheduleServiceImpl implements ScheduleService{
 
@@ -25,5 +27,10 @@ public class ScheduleServiceImpl implements ScheduleService{
         return responseDto;
 //        return scheduleRepository.saveSchedule(schedule);
 
+    }
+
+    @Override
+    public List<ScheduleResponseDto> findAllSchedules() {
+        return scheduleRepository.findAllSchedules();
     }
 }

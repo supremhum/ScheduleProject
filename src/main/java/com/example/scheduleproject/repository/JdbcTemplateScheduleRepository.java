@@ -3,6 +3,7 @@ package com.example.scheduleproject.repository;
 import com.example.scheduleproject.dto.ScheduleResponseDto;
 import com.example.scheduleproject.entity.Schedule;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
@@ -10,7 +11,9 @@ import org.springframework.stereotype.Repository;
 import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Repository
@@ -49,8 +52,31 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
 
     }
 
+    @Override
+    public List<ScheduleResponseDto> findAllSchedules() {
+        return jdbcTemplate.query("SELECT * FROM schedule",scheduleRowMapper());
+    }
+
+    private RowMapper<ScheduleResponseDto> scheduleRowMapper() {
+        return new RowMapper<ScheduleResponseDto>() {
+            @Override
+            public ScheduleResponseDto mapRow(ResultSet rs, int rowNum) throws SQLException {
+                return new ScheduleResponseDto(
+                        rs.getLong("id"),
+                        rs.getString("author"),
+                        rs.getString("title"),
+                        rs.getString("createDate"),
+                        rs.getString("updateDate")
+                );
+            }
+        };
+
+    }
+
+
+
     // DB에서 ID를 기반으로 데이터 조회하는 메서드 추가
-    public Schedule findById(Long id) {
+    private Schedule findById(Long id) {
         String sql = "SELECT * FROM schedule WHERE id = ?";
 
         return jdbcTemplate.queryForObject(sql, new Object[]{id}, (rs, rowNum) ->
