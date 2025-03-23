@@ -75,6 +75,12 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
         return updatedRow;
     }
 
+    @Override
+    public int updateTitleById(Long id, String title) {
+        int updatedRow = jdbcTemplate.update("update schedule set title = ?,updateDate = now() WHERE id = ?", title, id);
+        return updatedRow;
+    }
+
     private RowMapper<ScheduleResponseDto> scheduleRowMapper() {
         return new RowMapper<ScheduleResponseDto>() {
                                                         @Override
