@@ -5,5 +5,5 @@ import com.example.scheduleproject.dto.ScheduleResponseDto;
 
 public interface ScheduleService {
 
-    public ScheduleResponseDto saveSchedule(ScheduleRequestDto dto);
+    ScheduleResponseDto saveSchedule(ScheduleRequestDto dto);
 }

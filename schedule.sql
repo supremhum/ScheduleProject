@@ -6,8 +6,8 @@ CREATE TABLE schedule
     author VARCHAR(20)    NOT NULL        COMMENT '작성자',
     title VARCHAR(50)     NOT NULL        COMMENT '제목',
     password VARCHAR(100) NOT NULL        COMMENT '비밀번호',
-    createDate DATETIME   NOT NULL DEFAULT NOW() COMMENT '생성일',
-    updateDate DATETIME   NOT NULL DEFAULT NOW() COMMENT '수정일'
+    createDate DATETIME   DEFAULT NOW() COMMENT '생성일',
+    updateDate DATETIME   DEFAULT NOW() COMMENT '수정일'
 -- targetDate DATETIME   NULL            COMMENT '목표일'
 ); -- datetime에 서버시간으로 대체 고민
 
