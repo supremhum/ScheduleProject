@@ -14,5 +14,5 @@ public interface ScheduleService {
     ScheduleResponseDto findScheduleById(Long id);
     ScheduleResponseDto updateScheduleById(Long id, String author, String title, String password);
     ScheduleResponseDto updateTitleById(Long id, String author, String title,String password);
-    void deleteScheduleById(Long id);
+    void deleteScheduleById(Long id,String password);
 }

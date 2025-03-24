@@ -106,7 +106,11 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public void deleteScheduleById(Long id) {
+    public void deleteScheduleById(Long id,String password) {
+        Schedule passwordById = scheduleRepository.findPasswordById(id);
+        if (!password.equals(passwordById.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "비밀번호가 같지 않습니다");
+        }
         int updateRow = scheduleRepository.deleteScheduleById(id);
         if (updateRow == 0) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "찾을 수 없는 ID");
