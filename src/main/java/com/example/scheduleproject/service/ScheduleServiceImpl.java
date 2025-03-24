@@ -9,10 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class ScheduleServiceImpl implements ScheduleService {
@@ -37,7 +34,19 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public List<ScheduleResponseDto> findAllSchedules(Map<Object ,Object> authorUpdateMap) {
+    public List<ScheduleResponseDto> findAllSchedules(ScheduleRequestDto dto) {
+        Map<Object,Object> authorUpdateMap = new HashMap<>();
+        if (dto.getId()!=null) {
+            authorUpdateMap.put("id",dto.getId());
+        }if (dto.getAuthor()!=null) {
+            authorUpdateMap.put("author",dto.getAuthor());
+        }if (dto.getTitle()!=null) {
+            authorUpdateMap.put("title",dto.getTitle());
+        }if (dto.getCreateDate()!=null) {
+            authorUpdateMap.put("createDate",dto.getCreateDate());
+        }if (dto.getUpdateDate()!=null) {
+            authorUpdateMap.put("updateDate",dto.getUpdateDate());
+        }
         List<Schedule> allSchedules = scheduleRepository.findAllSchedules(authorUpdateMap);
         List<ScheduleResponseDto> allSchedule = new ArrayList<>();
         for (Schedule schedule : allSchedules) {

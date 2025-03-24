@@ -30,25 +30,9 @@ public class ScheduleController {
     }
 
     @GetMapping // api에 yyyy-mm-dd 임을 표기해주자
-    public ResponseEntity<List<ScheduleResponseDto>> findAllSchedules(@RequestParam(required = false) String author,
-                                                                      @RequestParam(required = false) String updateDate,
-                                                                      @RequestParam(required = false) Long id,
-                                                                      @RequestParam(required = false) String title,
-                                                                      @RequestParam(required = false) String createDate
+    public ResponseEntity<List<ScheduleResponseDto>> findAllSchedules(ScheduleRequestDto dto) {
 
-    ) {
-        Map<Object,Object> authorUpdateMap = new HashMap<>();
-        if (author!=null) {
-        authorUpdateMap.put("author",author);}
-        if (updateDate!=null) {
-        authorUpdateMap.put("updateDate",updateDate);}
-        if (id!=null) {
-            authorUpdateMap.put("id",id);}
-        if (createDate!=null) {
-            authorUpdateMap.put("createDate",createDate);}
-        if (title!=null) {
-            authorUpdateMap.put("title",title);}
-        return new ResponseEntity<>(scheduleService.findAllSchedules(authorUpdateMap), HttpStatus.OK);
+        return new ResponseEntity<>(scheduleService.findAllSchedules(dto), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")

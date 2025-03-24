@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface ScheduleService {
 
     ScheduleResponseDto saveSchedule(ScheduleRequestDto dto);
-    List<ScheduleResponseDto> findAllSchedules(Map<Object ,Object> authorUpdateMap);
+    List<ScheduleResponseDto> findAllSchedules(ScheduleRequestDto dto);
     ScheduleResponseDto findScheduleById(Long id);
     ScheduleResponseDto updateScheduleById(Long id, String author, String title, String password);
     ScheduleResponseDto updateTitleById(Long id, String author, String title,String password);

@@ -60,18 +60,19 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
         String string = "";
         int count = 0;
         List<String> list = new ArrayList<>();
-        for (Object temp:authorUpdateMap.keySet()) {
-            if(temp.equals("updateDate")) {
-                string=string + "date(" + temp + ")" + "= ? AND ";
+        for (Object temp : authorUpdateMap.keySet()) {
+            if (temp.equals("updateDate")) {
+                string = string + "date(" + temp + ")" + "= ? AND ";
             } else {
-            string=string + temp + "= ? AND "; }
+                string = string + temp + "= ? AND ";
+            }
             list.add(String.valueOf(authorUpdateMap.get(temp)));
             count++;
         }
-        if (count==0) {
+        if (count == 0) {
             return jdbcTemplate.query("SELECT id,author,title,date(createDate) createDate,date(updateDate) updateDate , updateDate sort FROM schedule ORDER BY sort desc ", scheduleRowMapperV2());
-        } else{
-            return jdbcTemplate.query("SELECT id,author,title,date(createDate) createDate,date(updateDate) updateDate, updateDate sort FROM schedule WHERE "+string+" true ORDER BY sort desc ",list.toArray(),scheduleRowMapperV2());
+        } else {
+            return jdbcTemplate.query("SELECT id,author,title,date(createDate) createDate,date(updateDate) updateDate, updateDate sort FROM schedule WHERE " + string + " true ORDER BY sort desc ", list.toArray(), scheduleRowMapperV2());
         }
     }
 
@@ -107,7 +108,7 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
     public Schedule findScheduleByIdOrElseThrow(Long id) {
         List<Schedule> result = jdbcTemplate.query("SELECT * FROM schedule WHERE id = ?", scheduleRowMapperV2(), id);
 
-        return result.stream().findAny().orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"찾을 수 없는 id 값 = "+ id ));
+        return result.stream().findAny().orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "찾을 수 없는 id 값 = " + id));
     }
 
     @Override
@@ -115,7 +116,7 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
         findScheduleByIdOrElseThrow(id);
         List<Schedule> result = jdbcTemplate.query("SELECT * FROM schedule WHERE id = ?", scheduleRowMapperV3(), id);
 
-        return result.stream().findAny().orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"찾을 수 없는 id 값 = "+ id ));
+        return result.stream().findAny().orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "찾을 수 없는 id 값 = " + id));
     }
 
     // DB에서 ID를 기반으로 데이터 조회하는 메서드
