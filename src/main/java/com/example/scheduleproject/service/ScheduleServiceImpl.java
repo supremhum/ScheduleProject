@@ -83,15 +83,22 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Override
     @Transactional
-    public ScheduleResponseDto updateTitleById(Long id, String author, String title) {
+    public ScheduleResponseDto updateTitleById(Long id, String author, String title, String password) {
         if (author != null || title == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "제목만 보내야 합니다");
         }
+
         int updateRow = scheduleRepository.updateTitleById(id, title);
 
         if (updateRow == 0) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "id값을 찾을 수 없습니다");
         }
+
+        Schedule passwordById = scheduleRepository.findPasswordById(id);
+        if (!password.equals(passwordById.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "비밀번호가 같지 않습니다");
+        }
+
         Schedule schedule = scheduleRepository.findScheduleByIdOrElseThrow(id);
 
         return new ScheduleResponseDto(schedule);

@@ -13,6 +13,6 @@ public interface ScheduleService {
     List<ScheduleResponseDto> findAllSchedules(Map<Object ,Object> authorUpdateMap);
     ScheduleResponseDto findScheduleById(Long id);
     ScheduleResponseDto updateScheduleById(Long id, String author, String title, String password);
-    ScheduleResponseDto updateTitleById(Long id, String author, String title);
+    ScheduleResponseDto updateTitleById(Long id, String author, String title,String password);
     void deleteScheduleById(Long id);
 }
