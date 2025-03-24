@@ -11,6 +11,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -35,8 +36,8 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public List<ScheduleResponseDto> findAllSchedules() {
-        List<Schedule> allSchedules = scheduleRepository.findAllSchedules();
+    public List<ScheduleResponseDto> findAllSchedules(Map<Object ,Object> authorUpdateMap) {
+        List<Schedule> allSchedules = scheduleRepository.findAllSchedules(authorUpdateMap);
         List<ScheduleResponseDto> allSchedule = new ArrayList<>();
         for (Schedule schedule : allSchedules) {
             allSchedule.add(new ScheduleResponseDto(schedule));

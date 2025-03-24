@@ -15,10 +15,7 @@ import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Repository
 public class JdbcTemplateScheduleRepository implements ScheduleRepository {
@@ -50,16 +47,34 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
         // 그러면 날짜 시간 타입이 yyyy-mm-dd hh:mm:ss 로 이쁘게 나옴.
         Optional<Schedule> schedule2 = findScheduleById(key.longValue());
         if (schedule2.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,"DB에 저장이 실행되지 않았음");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "DB에 저장이 실행되지 않았음");
         }
         return new ScheduleResponseDto(schedule2.get());
 
     }
 
     @Override
-    public List<Schedule> findAllSchedules() {
-        return jdbcTemplate.query("SELECT * FROM schedule", scheduleRowMapperV2());
+    public List<Schedule> findAllSchedules(Map<Object, Object> authorUpdateMap) {
+        // 수정일이 오늘로부터 가장 가까운 것(시간까지)부터 보여지게 정렬하고
+        // 보여지는 것은 date까지만 보이게 한다.
+        String string = "";
+        int count = 0;
+        List<String> list = new ArrayList<>();
+        for (Object temp:authorUpdateMap.keySet()) {
+            if(temp.equals("updateDate")) {
+                string=string + "date(" + (String)temp + ")" + "= ? AND ";
+            } else {
+            string=string + (String)temp + "= ? AND "; }
+            list.add((String) authorUpdateMap.get(temp));
+            count++;
+        }
+        if (count==0) {
+            return jdbcTemplate.query("SELECT id,author,title,date(createDate) createDate,date(updateDate) updateDate , updateDate sort FROM schedule ORDER BY sort desc ", scheduleRowMapperV2());
+        } else{
+            return jdbcTemplate.query("SELECT id,author,title,date(createDate) createDate,date(updateDate) updateDate, updateDate sort FROM schedule WHERE "+string+" true ORDER BY sort desc ",list.toArray(),scheduleRowMapperV2());
+        }
     }
+
 
     @Override
     public Optional<Schedule> findScheduleById(Long id) {

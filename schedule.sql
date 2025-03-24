@@ -21,3 +21,6 @@ SHOW VARIABLES LIKE 'time_zone';
 
 -- 테이블 삭제
 DROP TABLE schedule;
+
+-- 수정일 정렬 연습용 insert
+INSERT INTO schedule (author,title,updateDate,password) VALUE ('임쟁작성1','SORTING TEST','2025-03-23 09:01:02','dlawod123');
