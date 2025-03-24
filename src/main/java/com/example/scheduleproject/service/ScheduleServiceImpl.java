@@ -60,9 +60,14 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Transactional
     @Override
-    public ScheduleResponseDto updateScheduleById(Long id, String author, String title) {
-        if (title == null || author == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "제목과 작성자는 필수입니다");
+    public ScheduleResponseDto updateScheduleById(Long id, String author, String title,String password) {
+        if (title == null || author == null || password == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "제목과 작성자, 비밀번호는 필수입니다");
+        }
+
+        Schedule passwordById = scheduleRepository.findPasswordById(id);
+        if (!password.equals(passwordById.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "비밀번호가 같지 않습니다");
         }
 
         int updateRow = scheduleRepository.updateScheduleById(id, author, title);

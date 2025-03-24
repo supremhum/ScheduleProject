@@ -29,4 +29,10 @@ public class Schedule {
         this.createDate = createDate;
         this.updateDate = updateDate;
     }
+
+    // 때에 맞춰서 기능 생성
+    public Schedule(Long id,String password) {
+        this.id = id;
+        this.password = password;
+    }
 }
