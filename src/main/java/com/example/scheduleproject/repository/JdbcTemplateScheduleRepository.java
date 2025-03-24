@@ -103,12 +103,37 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
         return updateRow;
     }
 
+    @Override
+    public Schedule findScheduleByIdOrElseThrow(Long id) {
+        List<Schedule> result = jdbcTemplate.query("SELECT * FROM schedule WHERE id = ?", scheduleRowMapperV2(), id);
+
+        return result.stream().findAny().orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"찾을 수 없는 id 값 = "+ id ));
+    }
+
+    @Override
+    public Schedule findPasswordById(Long id) {
+        findScheduleByIdOrElseThrow(id);
+        List<Schedule> result = jdbcTemplate.query("SELECT * FROM schedule WHERE id = ?", scheduleRowMapperV3(), id);
+
+        return result.stream().findAny().orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"찾을 수 없는 id 값 = "+ id ));
+    }
+
     // DB에서 ID를 기반으로 데이터 조회하는 메서드
     private RowMapper<Schedule> scheduleRowMapperV2() {
         return new RowMapper<Schedule>() {
             @Override
             public Schedule mapRow(ResultSet rs, int rowNum) throws SQLException {
                 return new Schedule(rs.getLong("id"), rs.getString("author"), rs.getString("title"), rs.getString("createDate"), rs.getString("updateDate"));
+            }
+        };
+    }
+
+    // DB에서 ID 기반으로 비밀번호만 조회하는 메서드
+    private RowMapper<Schedule> scheduleRowMapperV3() {
+        return new RowMapper<Schedule>() {
+            @Override
+            public Schedule mapRow(ResultSet rs, int rowNum) throws SQLException {
+                return new Schedule(rs.getLong("id"), rs.getString("password"));
             }
         };
     }

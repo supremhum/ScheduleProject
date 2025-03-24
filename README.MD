@@ -1,4 +1,4 @@
-# Lv1 Scheduler
+# Lv2 Scheduler
 
 ## 📌 프로젝트 개요
 일정관리 Web Application의 **BACKEND** 영역을 구현해 봅니다
@@ -17,7 +17,7 @@ HTTP 요청과 응답, 코드의 기본 구조를 배워봅니다
 | 일정 조회 (단일)    | <span style="color:BLUE">GET</span>      | /api/schedules/{id} | ~~요청 param~~                                                                                | 응답 body<br>{<br>"id":"id",<br>"author":"작성자",<br>"title":"일정 제목",<br>"createDate":"2025-03-20",<br>"updateDate":"2025-03-20"<br>} | 200:OK |
 | 일정 수정 (모든 속성) | <span style="color:GREEN">PUT</span>    | /api/schedules/{id} | 요청 body<br>{<br>"author":"작성자 수정",<br>"title":"일정 제목 수정",<br>"password":"qwer1234"<br>} | 응답 body<br>{<br>"id":"id",<br>"author":"작성자 수정",<br>"title":"일정 제목 수정",<br>"createDate":"2025-03-20",<br>"updateDate":"요청날짜"<br>} | 200:OK |
 | 일정 수정 (제목 속성) | PATCH  | /api/schedules/{id} | 요청 body<br>{<br>"title":"일정 제목 수정",<br>"password":"qwer1234"<br>}                       | 응답 body<br>{<br>"id":"id",<br>"author":"작성자",<br>"title":"일정 제목 수정",<br>"createDate":"2025-03-20",<br>"updateDate":"요청날짜"<br>}    | 200:OK |
-| 일정 삭제         | <span style="color:RED">DELETE</span>| /api/schedules/{id} | ~~요청 param~~                                                                                | \-                                                                                                                                | 200:OK |
+| 일정 삭제         | <span style="color:RED">DELETE</span>| /api/schedules/{id} | 요청 body<br>{<br>"password":"qwer1234"<br>}                                                                                | \-                                                                                                                                | 200:OK |
 
 </details>
 
@@ -26,6 +26,9 @@ HTTP 요청과 응답, 코드의 기본 구조를 배워봅니다
 - 각 일정의 고유 식별자(ID)를 자동으로 생성하여 관리
 - 최초 입력 시, 수정일은 작성일과 동일
 - 선택한 일정 단건(ID를 통한)의 정보를 조회할 수 있습니다.
+
+
+- PUT,PATCH,DELETE 의 수정,삭제의 경우 비밀번호가 동일해야 기능을 수행합니다
 
 ## 🗄데이터베이스 설계
 
@@ -92,5 +95,12 @@ ScheduleProject-dev/
 - Index 접근이 있을 때 Optional 로 null 을 안정화
 
 ## 📝향후 개선 사항
-- 수정과 삭제시 비밀번호검증 기능 추가
+- ~~수정과 삭제시 비밀번호검증 기능 추가~~
 - ~~updatdDate 는 수정 완료시 자동 변경~~
+- DB에서 작성자를 분리하여 관리하기
+- 페이지네이션
+
+## 🐞트러블슈팅
+- DB에서 설정한 varchar 길이 넘어가면 500 error 가 뜨는것 유효성 검사하기
+- 서비스레이어에서의 코드 흐름 파악 못해서 엉뚱한 대답 받음
+- jdbc 쿼리를 작성할 때 ? 라는 prepared Statement 을 무시하면 DB에 1=1공격, drop 공격 가능

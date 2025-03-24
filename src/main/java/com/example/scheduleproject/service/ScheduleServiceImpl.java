@@ -30,8 +30,9 @@ public class ScheduleServiceImpl implements ScheduleService {
 
         Schedule schedule = new Schedule(dto.getAuthor(), dto.getTitle(), dto.getPassword());
 
-        ScheduleResponseDto responseDto = scheduleRepository.saveSchedule(schedule);
-        return responseDto;
+//        ScheduleResponseDto responseDto = scheduleRepository.saveSchedule(schedule);
+//        return responseDto;
+        return scheduleRepository.saveSchedule(schedule);
 
     }
 
@@ -47,20 +48,26 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Override
     public ScheduleResponseDto findScheduleById(Long id) {
-        Optional<Schedule> schedule = scheduleRepository.findScheduleById(id);
-        if (schedule.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "못찾음");
-        }
-        return new ScheduleResponseDto(schedule.get());
+//        Optional<Schedule> schedule = scheduleRepository.findScheduleById(id);
+        Schedule schedule = scheduleRepository.findScheduleByIdOrElseThrow(id);
+//        if (schedule.isEmpty()) {
+//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "못찾음");
+//        }
+        return new ScheduleResponseDto(schedule);
 
 
     }
 
     @Transactional
     @Override
-    public ScheduleResponseDto updateScheduleById(Long id, String author, String title) {
-        if (title == null || author == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "제목과 작성자는 필수입니다");
+    public ScheduleResponseDto updateScheduleById(Long id, String author, String title,String password) {
+        if (title == null || author == null || password == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "제목과 작성자, 비밀번호는 필수입니다");
+        }
+
+        Schedule passwordById = scheduleRepository.findPasswordById(id);
+        if (!password.equals(passwordById.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "비밀번호가 같지 않습니다");
         }
 
         int updateRow = scheduleRepository.updateScheduleById(id, author, title);
@@ -69,30 +76,41 @@ public class ScheduleServiceImpl implements ScheduleService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 id값이 없습니다");
         }
 
-        Optional<Schedule> optionalSchedule = scheduleRepository.findScheduleById(id);
+        Schedule schedule = scheduleRepository.findScheduleByIdOrElseThrow(id);
 
-        return new ScheduleResponseDto(optionalSchedule.get());
+        return new ScheduleResponseDto(schedule);
     }
 
     @Override
     @Transactional
-    public ScheduleResponseDto updateTitleById(Long id, String author, String title) {
+    public ScheduleResponseDto updateTitleById(Long id, String author, String title, String password) {
         if (author != null || title == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "제목만 보내야 합니다");
         }
+
         int updateRow = scheduleRepository.updateTitleById(id, title);
 
         if (updateRow == 0) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "id값을 찾을 수 없습니다");
         }
-        Optional<Schedule> optionalSchedule = scheduleRepository.findScheduleById(id);
-        ScheduleResponseDto dto = new ScheduleResponseDto(optionalSchedule.get());
 
-        return dto;
+        Schedule passwordById = scheduleRepository.findPasswordById(id);
+        if (!password.equals(passwordById.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "비밀번호가 같지 않습니다");
+        }
+
+        Schedule schedule = scheduleRepository.findScheduleByIdOrElseThrow(id);
+
+        return new ScheduleResponseDto(schedule);
+
     }
 
     @Override
-    public void deleteScheduleById(Long id) {
+    public void deleteScheduleById(Long id,String password) {
+        Schedule passwordById = scheduleRepository.findPasswordById(id);
+        if (!password.equals(passwordById.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "비밀번호가 같지 않습니다");
+        }
         int updateRow = scheduleRepository.deleteScheduleById(id);
         if (updateRow == 0) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "찾을 수 없는 ID");
