@@ -30,8 +30,9 @@ public class ScheduleServiceImpl implements ScheduleService {
 
         Schedule schedule = new Schedule(dto.getAuthor(), dto.getTitle(), dto.getPassword());
 
-        ScheduleResponseDto responseDto = scheduleRepository.saveSchedule(schedule);
-        return responseDto;
+//        ScheduleResponseDto responseDto = scheduleRepository.saveSchedule(schedule);
+//        return responseDto;
+        return scheduleRepository.saveSchedule(schedule);
 
     }
 
@@ -47,11 +48,12 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Override
     public ScheduleResponseDto findScheduleById(Long id) {
-        Optional<Schedule> schedule = scheduleRepository.findScheduleById(id);
-        if (schedule.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "못찾음");
-        }
-        return new ScheduleResponseDto(schedule.get());
+//        Optional<Schedule> schedule = scheduleRepository.findScheduleById(id);
+        Schedule schedule = scheduleRepository.findScheduleByIdOrElseThrow(id);
+//        if (schedule.isEmpty()) {
+//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "못찾음");
+//        }
+        return new ScheduleResponseDto(schedule);
 
 
     }
@@ -69,9 +71,9 @@ public class ScheduleServiceImpl implements ScheduleService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 id값이 없습니다");
         }
 
-        Optional<Schedule> optionalSchedule = scheduleRepository.findScheduleById(id);
+        Schedule schedule = scheduleRepository.findScheduleByIdOrElseThrow(id);
 
-        return new ScheduleResponseDto(optionalSchedule.get());
+        return new ScheduleResponseDto(schedule);
     }
 
     @Override
@@ -85,10 +87,10 @@ public class ScheduleServiceImpl implements ScheduleService {
         if (updateRow == 0) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "id값을 찾을 수 없습니다");
         }
-        Optional<Schedule> optionalSchedule = scheduleRepository.findScheduleById(id);
-        ScheduleResponseDto dto = new ScheduleResponseDto(optionalSchedule.get());
+        Schedule schedule = scheduleRepository.findScheduleByIdOrElseThrow(id);
 
-        return dto;
+        return new ScheduleResponseDto(schedule);
+
     }
 
     @Override
