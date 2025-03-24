@@ -62,10 +62,10 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
         List<String> list = new ArrayList<>();
         for (Object temp:authorUpdateMap.keySet()) {
             if(temp.equals("updateDate")) {
-                string=string + "date(" + (String)temp + ")" + "= ? AND ";
+                string=string + "date(" + temp + ")" + "= ? AND ";
             } else {
-            string=string + (String)temp + "= ? AND "; }
-            list.add((String) authorUpdateMap.get(temp));
+            string=string + temp + "= ? AND "; }
+            list.add(String.valueOf(authorUpdateMap.get(temp)));
             count++;
         }
         if (count==0) {
