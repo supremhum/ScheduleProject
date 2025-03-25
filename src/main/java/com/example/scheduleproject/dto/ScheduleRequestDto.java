@@ -10,6 +10,7 @@ public class ScheduleRequestDto {
     private String title;
     private String password;
     private Long id;
+    private Long memberId;
     private String createDate;
     private String updateDate;
 }
