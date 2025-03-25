@@ -34,7 +34,7 @@ HTTP 요청과 응답, 코드의 기본 구조를 배워봅니다
 
 <details><summary><span style="font-weight:BOLD; font-size:medium">ERD</span></summary>
 
-![onealog](/assets/erdlv1.png)
+![onealog](/assets/erdlv3.png)
 
 </details>
 

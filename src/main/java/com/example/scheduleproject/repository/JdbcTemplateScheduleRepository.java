@@ -33,7 +33,7 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate); // insert 란 명령어는 새로운 행 삽입이니깐. 데이터를 저장할때 사용
         // schedule 이란 테이블에서 키-생성자-사용 칼럼명-id에서. 여기서 트러블슈팅은 jdbc가 insert를 하기 때문에 date 부분 안건드리게 .usingcolumns 로 명시
         // default now() 기 때문에 값들이 들어오면 그것으로 대체된다. 여기서 jdbc의 insert 명령어가 밑의 param 과 연계되어 값을 넣어버리기 때문에 default가 동작하기 힘들었던것
-        jdbcInsert.withTableName("schedule").usingGeneratedKeyColumns("id").usingColumns("author", "title", "password");
+        jdbcInsert.withTableName("schedule").usingGeneratedKeyColumns("schedule_id").usingColumns("author", "title", "password");
 
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("author", schedule.getAuthor());
@@ -61,7 +61,7 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
         int count = 0;
         List<String> list = new ArrayList<>();
         for (Object temp : authorUpdateMap.keySet()) {
-            if (temp.equals("updateDate")) {
+            if (temp.equals("update_date")) { // query param 에서 받는 update_date 형식은 yyyy-mm-dd. create는 추후에. targetDate까지 생각했을때 리펙토링
                 string = string + "date(" + temp + ")" + "= ? AND ";
             } else {
                 string = string + temp + "= ? AND ";
@@ -70,9 +70,9 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
             count++;
         }
         if (count == 0) {
-            return jdbcTemplate.query("SELECT id,author,title,date(createDate) createDate,date(updateDate) updateDate , updateDate sort FROM schedule ORDER BY sort desc ", scheduleRowMapperV2());
+            return jdbcTemplate.query("SELECT schedule_id,author,title,date(create_date) create_date,date(update_date) update_date , update_date sort FROM schedule ORDER BY sort desc ", scheduleRowMapperV2());
         } else {
-            return jdbcTemplate.query("SELECT id,author,title,date(createDate) createDate,date(updateDate) updateDate, updateDate sort FROM schedule WHERE " + string + " true ORDER BY sort desc ", list.toArray(), scheduleRowMapperV2());
+            return jdbcTemplate.query("SELECT schedule_id,author,title,date(create_date) create_date,date(update_date) update_date, update_date sort FROM schedule WHERE " + string + " true ORDER BY sort desc ", list.toArray(), scheduleRowMapperV2());
         }
     }
 
@@ -80,7 +80,7 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
     @Override
     public Optional<Schedule> findScheduleById(Long id) {
 
-        List<Schedule> result = jdbcTemplate.query("SELECT * FROM schedule WHERE id = ?", scheduleRowMapperV2(), id);
+        List<Schedule> result = jdbcTemplate.query("SELECT * FROM schedule WHERE schedule_id = ?", scheduleRowMapperV2(), id);
 
         return result.stream().findAny();
     }
@@ -88,25 +88,25 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
     @Override
     public int updateScheduleById(Long id, String author, String title) {
         // 쿼리를 수행한 로우 수가 반환되는 것이다.
-        int updatedRow = jdbcTemplate.update("update schedule set author = ?, title = ?,updateDate = now() WHERE id = ?", author, title, id);
+        int updatedRow = jdbcTemplate.update("update schedule set author = ?, title = ?,update_date = now() WHERE schedule_id = ?", author, title, id);
         return updatedRow;
     }
 
     @Override
     public int updateTitleById(Long id, String title) {
-        int updatedRow = jdbcTemplate.update("update schedule set title = ?,updateDate = now() WHERE id = ?", title, id);
+        int updatedRow = jdbcTemplate.update("update schedule set title = ?,update_date = now() WHERE schedule_id = ?", title, id);
         return updatedRow;
     }
 
     @Override
     public int deleteScheduleById(Long id) {
-        int updateRow = jdbcTemplate.update("delete from schedule where id = ? ", id);
+        int updateRow = jdbcTemplate.update("delete from schedule where schedule_id = ? ", id);
         return updateRow;
     }
 
     @Override
     public Schedule findScheduleByIdOrElseThrow(Long id) {
-        List<Schedule> result = jdbcTemplate.query("SELECT * FROM schedule WHERE id = ?", scheduleRowMapperV2(), id);
+        List<Schedule> result = jdbcTemplate.query("SELECT * FROM schedule WHERE schedule_id = ?", scheduleRowMapperV2(), id);
 
         return result.stream().findAny().orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "찾을 수 없는 id 값 = " + id));
     }
@@ -114,7 +114,7 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
     @Override
     public Schedule findPasswordById(Long id) {
         findScheduleByIdOrElseThrow(id);
-        List<Schedule> result = jdbcTemplate.query("SELECT * FROM schedule WHERE id = ?", scheduleRowMapperV3(), id);
+        List<Schedule> result = jdbcTemplate.query("SELECT * FROM schedule WHERE schedule_id = ?", scheduleRowMapperV3(), id);
 
         return result.stream().findAny().orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "찾을 수 없는 id 값 = " + id));
     }
@@ -124,7 +124,7 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
         return new RowMapper<Schedule>() {
             @Override
             public Schedule mapRow(ResultSet rs, int rowNum) throws SQLException {
-                return new Schedule(rs.getLong("id"), rs.getString("author"), rs.getString("title"), rs.getString("createDate"), rs.getString("updateDate"));
+                return new Schedule(rs.getLong("schedule_id"), rs.getString("author"), rs.getString("title"), rs.getString("create_date"), rs.getString("update_date"));
             }
         };
     }
@@ -134,7 +134,7 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
         return new RowMapper<Schedule>() {
             @Override
             public Schedule mapRow(ResultSet rs, int rowNum) throws SQLException {
-                return new Schedule(rs.getLong("id"), rs.getString("password"));
+                return new Schedule(rs.getLong("schedule_id"), rs.getString("password"));
             }
         };
     }

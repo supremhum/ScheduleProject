@@ -37,22 +37,22 @@ public class ScheduleServiceImpl implements ScheduleService {
     public List<ScheduleResponseDto> findAllSchedules(ScheduleRequestDto dto) {
         Map<Object,Object> authorUpdateMap = new HashMap<>();
         if (dto.getId()!=null) {
-            authorUpdateMap.put("id",dto.getId());
+            authorUpdateMap.put("schedule_id",dto.getId());
         }if (dto.getAuthor()!=null) {
             authorUpdateMap.put("author",dto.getAuthor());
         }if (dto.getTitle()!=null) {
             authorUpdateMap.put("title",dto.getTitle());
         }if (dto.getCreateDate()!=null) {
-            authorUpdateMap.put("createDate",dto.getCreateDate());
+            authorUpdateMap.put("create_date",dto.getCreateDate());
         }if (dto.getUpdateDate()!=null) {
-            authorUpdateMap.put("updateDate",dto.getUpdateDate());
+            authorUpdateMap.put("update_date",dto.getUpdateDate());
         }
-        List<Schedule> allSchedules = scheduleRepository.findAllSchedules(authorUpdateMap);
-        List<ScheduleResponseDto> allSchedule = new ArrayList<>();
-        for (Schedule schedule : allSchedules) {
-            allSchedule.add(new ScheduleResponseDto(schedule));
+        List<Schedule> allSchedulesList = scheduleRepository.findAllSchedules(authorUpdateMap);
+        List<ScheduleResponseDto> allSchedules = new ArrayList<>();
+        for (Schedule schedule : allSchedulesList) {
+            allSchedules.add(new ScheduleResponseDto(schedule));
         }
-        return allSchedule;
+        return allSchedules;
     }
 
     @Override

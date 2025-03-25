@@ -24,3 +24,15 @@ DROP TABLE schedule;
 
 -- 수정일 정렬 연습용 insert
 INSERT INTO schedule (author,title,updateDate,password) VALUE ('임쟁작성1','SORTING TEST','2025-03-23 09:01:02','dlawod123');
+
+-- ========================= Lv3용 =========================
+-- schedule 테이블에서 id 칼럼명 schedule_id 로 만들고 snake_case 로 만들기
+-- 그러면 레파지토리에서 mapping을 다시 잡아줘야함
+ALTER TABLE schedule RENAME COLUMN id TO schedule_id;
+ALTER TABLE schedule RENAME COLUMN createDate TO create_date;
+ALTER TABLE schedule RENAME COLUMN updateDate TO update_date;
+-- DB 칼럼명 snake_case 로 바꾼뒤 테스트용
+INSERT INTO schedule (author,title,update_date,password) VALUE ('lim','schedule update test','2025-03-23 09:01:02','1234');
+
+-- schedule 테이블에서 member 테이블과 연동되는 외래키(member_id 만들고
+-- member 테이블 만들고
