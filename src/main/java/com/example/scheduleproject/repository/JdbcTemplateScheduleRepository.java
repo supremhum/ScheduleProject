@@ -71,9 +71,9 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
             count++;
         }
         if (count == 0) {
-            return jdbcTemplate.query("SELECT schedule_id,author,title,date(create_date) create_date,date(update_date) update_date , update_date sort FROM schedule ORDER BY sort desc ", scheduleRowMapperV2());
+            return jdbcTemplate.query("SELECT schedule_id,member_id,author,title,date(create_date) create_date,date(update_date) update_date , update_date sort FROM schedule ORDER BY sort desc ", scheduleRowMapperV2());
         } else {
-            return jdbcTemplate.query("SELECT schedule_id,author,title,date(create_date) create_date,date(update_date) update_date, update_date sort FROM schedule WHERE " + string + " true ORDER BY sort desc ", list.toArray(), scheduleRowMapperV2());
+            return jdbcTemplate.query("SELECT schedule_id,member_id,author,title,date(create_date) create_date,date(update_date) update_date, update_date sort FROM schedule WHERE " + string + " true ORDER BY sort desc ", list.toArray(), scheduleRowMapperV2());
         }
     }
 

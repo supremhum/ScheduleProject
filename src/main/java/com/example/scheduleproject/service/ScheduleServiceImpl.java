@@ -38,6 +38,8 @@ public class ScheduleServiceImpl implements ScheduleService {
         Map<Object,Object> authorUpdateMap = new HashMap<>();
         if (dto.getId()!=null) {
             authorUpdateMap.put("schedule_id",dto.getId());
+        }if (dto.getMemberId()!=null) {
+            authorUpdateMap.put("member_id",dto.getMemberId());
         }if (dto.getAuthor()!=null) {
             authorUpdateMap.put("author",dto.getAuthor());
         }if (dto.getTitle()!=null) {
