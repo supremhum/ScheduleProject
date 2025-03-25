@@ -1,7 +1,9 @@
 package com.example.scheduleproject.repository;
 
+import com.example.scheduleproject.dto.MemberResponseDto;
 import com.example.scheduleproject.dto.ScheduleRequestDto;
 import com.example.scheduleproject.dto.ScheduleResponseDto;
+import com.example.scheduleproject.entity.Member;
 import com.example.scheduleproject.entity.Schedule;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -120,6 +122,41 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
         return result.stream().findAny().orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "찾을 수 없는 id 값 = " + id));
     }
 
+    @Override
+    public MemberResponseDto saveMember(Member member) {
+        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
+        jdbcInsert.withTableName("member").usingGeneratedKeyColumns("member_id").usingColumns("name","email");
+
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("name", member.getName());
+        parameters.put("email", member.getEmail());
+
+        Number key = jdbcInsert.executeAndReturnKey(new MapSqlParameterSource(parameters));
+
+        Optional<Member> member2 = findMemberById(key.longValue());
+        if (member2.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "DB에 저장이 실행되지 않았음");
+        }
+        return new MemberResponseDto(member2.get());
+
+    }
+
+    @Override
+    public Member findMemberByIdOrElseThrow(Long id) {
+        List<Member> result = jdbcTemplate.query("SELECT * FROM member WHERE member_id = ?", memberRowMapper(), id);
+
+        return result.stream().findAny().orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "찾을 수 없는 id 값 = " + id));
+
+    }
+
+    public Optional<Member> findMemberById (Long id) {
+        List<Member> result = jdbcTemplate.query("SELECT * FROM member WHERE member_id = ?", memberRowMapper(), id);
+
+        return result.stream().findAny();
+    }
+
+
+
     // DB에서 ID를 기반으로 데이터 조회하는 메서드
     private RowMapper<Schedule> scheduleRowMapperV2() {
         return new RowMapper<Schedule>() {
@@ -136,6 +173,15 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
             @Override
             public Schedule mapRow(ResultSet rs, int rowNum) throws SQLException {
                 return new Schedule(rs.getLong("schedule_id"), rs.getString("password"));
+            }
+        };
+    }
+
+    private RowMapper<Member> memberRowMapper() {
+        return new RowMapper<Member>() {
+            @Override
+            public Member mapRow(ResultSet rs, int rowNum) throws SQLException {
+                return new Member(rs.getLong("member_id"), rs.getString("name"), rs.getString("email"), rs.getString("create_date"), rs.getString("update_date"));
             }
         };
     }

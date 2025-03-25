@@ -1,7 +1,10 @@
 package com.example.scheduleproject.service;
 
+import com.example.scheduleproject.dto.MemberRequestDto;
+import com.example.scheduleproject.dto.MemberResponseDto;
 import com.example.scheduleproject.dto.ScheduleRequestDto;
 import com.example.scheduleproject.dto.ScheduleResponseDto;
+import com.example.scheduleproject.entity.Member;
 import com.example.scheduleproject.entity.Schedule;
 import com.example.scheduleproject.repository.ScheduleRepository;
 import org.springframework.http.HttpStatus;
@@ -24,6 +27,13 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Transactional
     @Override
     public ScheduleResponseDto saveSchedule(ScheduleRequestDto dto) {
+
+        if (dto.getMemberId()==null||dto.getAuthor()==null||dto.getTitle()==null||dto.getPassword()==null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "제목, 작성자, 멤버id와 비밀번호는 필수입니다");
+        }
+
+        // 멤버 아이디를 검색해서 존재하지 않으면 404notfound
+        findMemberById(dto.getMemberId());
 
         Schedule schedule = new Schedule(dto.getMemberId(),dto.getAuthor(), dto.getTitle(), dto.getPassword());
 
@@ -126,5 +136,19 @@ public class ScheduleServiceImpl implements ScheduleService {
         if (updateRow == 0) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "찾을 수 없는 ID");
         }
+    }
+
+    @Override
+    public MemberResponseDto saveMember(MemberRequestDto dto) {
+        Member member = new Member(dto.getName(),dto.getEmail());
+
+        return scheduleRepository.saveMember(member);
+    }
+
+    @Override
+    public MemberResponseDto findMemberById(Long id) {
+        Member member = scheduleRepository.findMemberByIdOrElseThrow(id);
+
+        return new MemberResponseDto(member);
     }
 }

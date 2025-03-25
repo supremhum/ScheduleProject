@@ -1,5 +1,6 @@
 package com.example.scheduleproject.entity;
 
+import jakarta.validation.constraints.Max;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -17,7 +18,6 @@ public class Schedule {
 
     // id,생성-수정날짜 제외한 생성자
     public Schedule(String author, String title, String password) {
-//        this.memberId = memberId;
         this.author = author;
         this.title = title;
         this.password = password;
@@ -26,7 +26,6 @@ public class Schedule {
     // 때에 맞춰서 생성
     public Schedule(Long id, String author, String title, String createDate, String updateDate) {
         this.id = id;
-//        this.memberId = memberId;
         this.author = author;
         this.title = title;
         this.createDate = createDate;

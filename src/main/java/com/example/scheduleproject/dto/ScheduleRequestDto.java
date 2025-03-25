@@ -13,4 +13,6 @@ public class ScheduleRequestDto {
     private Long memberId;
     private String createDate;
     private String updateDate;
+
+
 }
