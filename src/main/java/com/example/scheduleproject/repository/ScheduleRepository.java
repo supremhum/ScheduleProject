@@ -1,7 +1,9 @@
 package com.example.scheduleproject.repository;
 
+import com.example.scheduleproject.dto.MemberResponseDto;
 import com.example.scheduleproject.dto.ScheduleRequestDto;
 import com.example.scheduleproject.dto.ScheduleResponseDto;
+import com.example.scheduleproject.entity.Member;
 import com.example.scheduleproject.entity.Schedule;
 
 import java.util.List;
@@ -17,4 +19,7 @@ public interface ScheduleRepository {
     int deleteScheduleById(Long id);
     Schedule findScheduleByIdOrElseThrow(Long id);
     Schedule findPasswordById(Long id);
+
+    MemberResponseDto saveMember(Member member);
+    Member findMemberByIdOrElseThrow(Long id);
 }

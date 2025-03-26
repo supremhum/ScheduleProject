@@ -1,7 +1,10 @@
 package com.example.scheduleproject.service;
 
+import com.example.scheduleproject.dto.MemberRequestDto;
+import com.example.scheduleproject.dto.MemberResponseDto;
 import com.example.scheduleproject.dto.ScheduleRequestDto;
 import com.example.scheduleproject.dto.ScheduleResponseDto;
+import com.example.scheduleproject.entity.Member;
 import com.example.scheduleproject.entity.Schedule;
 import com.example.scheduleproject.repository.ScheduleRepository;
 import org.springframework.http.HttpStatus;
@@ -9,10 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class ScheduleServiceImpl implements ScheduleService {
@@ -28,7 +28,14 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Override
     public ScheduleResponseDto saveSchedule(ScheduleRequestDto dto) {
 
-        Schedule schedule = new Schedule(dto.getAuthor(), dto.getTitle(), dto.getPassword());
+        if (dto.getMemberId()==null||dto.getAuthor()==null||dto.getTitle()==null||dto.getPassword()==null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "제목, 작성자, 멤버id와 비밀번호는 필수입니다");
+        }
+
+        // 멤버 아이디를 검색해서 존재하지 않으면 404notfound
+        findMemberById(dto.getMemberId());
+
+        Schedule schedule = new Schedule(dto.getMemberId(),dto.getAuthor(), dto.getTitle(), dto.getPassword());
 
 //        ScheduleResponseDto responseDto = scheduleRepository.saveSchedule(schedule);
 //        return responseDto;
@@ -37,13 +44,27 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public List<ScheduleResponseDto> findAllSchedules(Map<Object ,Object> authorUpdateMap) {
-        List<Schedule> allSchedules = scheduleRepository.findAllSchedules(authorUpdateMap);
-        List<ScheduleResponseDto> allSchedule = new ArrayList<>();
-        for (Schedule schedule : allSchedules) {
-            allSchedule.add(new ScheduleResponseDto(schedule));
+    public List<ScheduleResponseDto> findAllSchedules(ScheduleRequestDto dto) {
+        Map<Object,Object> authorUpdateMap = new HashMap<>();
+        if (dto.getId()!=null) {
+            authorUpdateMap.put("schedule_id",dto.getId());
+        }if (dto.getMemberId()!=null) {
+            authorUpdateMap.put("member_id",dto.getMemberId());
+        }if (dto.getAuthor()!=null) {
+            authorUpdateMap.put("author",dto.getAuthor());
+        }if (dto.getTitle()!=null) {
+            authorUpdateMap.put("title",dto.getTitle());
+        }if (dto.getCreateDate()!=null) {
+            authorUpdateMap.put("create_date",dto.getCreateDate());
+        }if (dto.getUpdateDate()!=null) {
+            authorUpdateMap.put("update_date",dto.getUpdateDate());
         }
-        return allSchedule;
+        List<Schedule> allSchedulesList = scheduleRepository.findAllSchedules(authorUpdateMap);
+        List<ScheduleResponseDto> allSchedules = new ArrayList<>();
+        for (Schedule schedule : allSchedulesList) {
+            allSchedules.add(new ScheduleResponseDto(schedule));
+        }
+        return allSchedules;
     }
 
     @Override
@@ -115,5 +136,19 @@ public class ScheduleServiceImpl implements ScheduleService {
         if (updateRow == 0) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "찾을 수 없는 ID");
         }
+    }
+
+    @Override
+    public MemberResponseDto saveMember(MemberRequestDto dto) {
+        Member member = new Member(dto.getName(),dto.getEmail());
+
+        return scheduleRepository.saveMember(member);
+    }
+
+    @Override
+    public MemberResponseDto findMemberById(Long id) {
+        Member member = scheduleRepository.findMemberByIdOrElseThrow(id);
+
+        return new MemberResponseDto(member);
     }
 }
